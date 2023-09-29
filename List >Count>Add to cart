@@ -1,0 +1,164 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MaterialApp(
+    home: HomeScreen(pricelist: [
+      33,
+      34,
+      56,
+      676,
+      76,
+      45,
+      87,
+      98,
+      23,
+      56,
+      54,
+      875,
+      93,
+      89,
+      64,
+      23,
+      92
+    ]),
+    debugShowCheckedModeBanner: false,
+  ));
+}
+
+class HomeScreen extends StatefulWidget {
+  final List<double> pricelist;
+  const HomeScreen({super.key, required this.pricelist});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<int> counter = List.generate(17, (index) => 0);
+
+  /// we can => 7*2 do this it value 14 will show const at count bar.
+
+  int cnt = 1; //Global
+
+  void incrementCount(int index) {
+    /// Elavate Button theke call kora hobe ,ekhane count increament, increament limit set to show AlertDialog.
+    setState(() {
+      cnt = counter[index]++;
+
+      ///<------             ///this ++ element add 1 over the current value
+      if (cnt == 6) {
+        _showAlertDialog(index);
+      }
+    });
+  }
+
+  void _showAlertDialog(int index) {
+    /// Ekhane increamentCount Function er sathe conditionally link kora hoace If er maddhome.
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog.adaptive(
+            title: Text('Congratulations'),
+            content: Text('You Bought ${counter[index]} Product No. $index'),
+
+            /// counter[index]==7 ekhan theke value get korce
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('Ok'))
+            ],
+          );
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Product List'),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Column(
+            children: [
+              Expanded(
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            SizedBox(
+                              height: 60,
+                              width: double.infinity,
+                              child: ListTile(
+                                title: Text(
+                                  'Product No. $index',
+                                  style: TextStyle(fontSize: 16),
+                                  textAlign: TextAlign.start,
+                                ),
+                                subtitle:
+                                    Text('Price: \$${widget.pricelist[index]}'),
+                                trailing: Column(
+                                  children: [
+                                    Text('Count: ${counter[index]}'),
+                                    SizedBox(
+                                      height: 35,
+                                      child: ElevatedButton(
+                                          onPressed: () {
+                                            incrementCount(index);
+                                          },
+                                          child: Text('Buy Now')),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                      separatorBuilder: (context, index) => Divider(),
+                      itemCount: 17))
+            ],
+          ),
+        ),
+        floatingActionButton: Container(
+          alignment: Alignment.bottomCenter,
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CartPage(count: cnt)));
+            },
+            child: Icon(Icons.shopping_cart),
+          ),
+        ));
+  }
+}
+
+class CartPage extends StatelessWidget {
+  final int count;
+  const CartPage({super.key, required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('cart'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Total Product Purchase : $count',
+              style: TextStyle(fontSize: 20),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
